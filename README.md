@@ -35,58 +35,57 @@ The suggested file names correspond to the following scripts.
 
 For a directed graph with \(n\) vertices, every possible directed edge, including every self-loop, is independently present with probability
 
-\[
 p=\frac{\log n+c}{n},
-\]
+
 
 where \(c\) controls the location within the transition region.
 
 The theoretical lower and upper bounds used in the codes are
 
-\[
+
 L(c)
 =
 \exp\!\left(-2e^{-c}\right)
 \left(1+2e^{-c}+e^{-2c}\right),
-\]
+
 
 and
 
-\[
+
 U(c)
 =
 1-e^{-2c}\exp\!\left(-2e^{-c}\right).
-\]
+
 
 ### The model \(\mathcal{G}(n,p,q)\)
 
 For \(\mathcal{G}(n,p,q)\), every non-self-loop directed edge is independently present with probability
 
-\[
+
 p=\frac{\log n+c}{n},
-\]
+
 
 whereas every self-loop is independently present with probability \(q\).
 
 The theoretical lower and upper bounds used in the codes are
 
-\[
+
 L(c,q)
 =
 \exp\!\left[-2(1-q)e^{-c}\right]
 \left[
 1+2(1-q)e^{-c}+(1-q)^2e^{-2c}
 \right],
-\]
+
 
 and
 
-\[
+
 U(c,q)
 =
 1-(1-q)^2e^{-2c}
 \exp\!\left[-2(1-q)e^{-c}\right].
-\]
+
 
 ## Structural Diagonalizability Test
 
