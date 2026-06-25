@@ -3,7 +3,7 @@ MATLAB simulation code for studying the probability of structural diagonalizabil
 
 # Representative MATLAB Codes for Structural Diagonalizability in Random Directed Graphs
 
-This repository provides representative MATLAB implementations for the numerical experiments on structural diagonalizability in random directed graphs. The codes evaluate the probability of structural diagonalizability for the random graph models \(\mathcal{G}(n,p)\) and \(\mathcal{G}(n,p,q)\), compare Monte Carlo estimates with the corresponding theoretical upper and lower bounds, and investigate finite-size behavior as the number of vertices increases.
+This repository provides representative MATLAB implementations for the numerical experiments on structural diagonalizability in random directed graphs. The codes evaluate the probability of structural diagonalizability for the random graph models \mathcal{G}(n,p) and \mathcal{G}(n,p,q), compare Monte Carlo estimates with the corresponding theoretical upper and lower bounds, and investigate finite-size behavior as the number of vertices increases.
 
 The minimum-cost perfect matching problems appearing in the structural diagonalizability test are solved using the Munkres algorithm implemented in `munkres.m`.
 
@@ -23,66 +23,53 @@ The suggested file names correspond to the following scripts.
 
 | File | Description |
 |---|---|
-| `gnp_probability_vs_c.m` | Fixes \(n\), varies the transition parameter \(c\), and compares the empirical structural diagonalizability probability of \(\mathcal{G}(n,p)\) with the theoretical bounds. |
-| `gnpq_probability_vs_q.m` | Fixes \(n\) and \(c\), varies the self-loop probability \(q\), and compares the empirical probability for \(\mathcal{G}(n,p,q)\) with the theoretical bounds. |
-| `gnp_finite_size_logscale.m` | Studies finite-size behavior of \(\mathcal{G}(n,p)\) for several representative values of \(c\) and several graph sizes \(n\). The horizontal axis uses a true logarithmic scale. |
-| `gnpq_finite_size_logscale.m` | Studies finite-size behavior of \(\mathcal{G}(n,p,q)\) for several representative values of \(q\), with \(c\) fixed, and uses a true logarithmic horizontal axis. |
+| `gnp_probability_vs_c.m` | Fixes n, varies the transition parameter c, and compares the empirical structural diagonalizability probability of \mathcal{G}(n,p) with the theoretical bounds. |
+| `gnpq_probability_vs_q.m` | Fixes n and c, varies the self-loop probability q, and compares the empirical probability for \mathcal{G}(n,p,q) with the theoretical bounds. |
+| `gnp_finite_size_logscale.m` | Studies finite-size behavior of \mathcal{G}(n,p) for several representative values of c and several graph sizes n. The horizontal axis uses a true logarithmic scale. |
+| `gnpq_finite_size_logscale.m` | Studies finite-size behavior of \mathcal{G}(n,p,q) for several representative values of q, with c fixed, and uses a true logarithmic horizontal axis. |
 | `munkres.m` | Implements the Munkres/Hungarian algorithm used to solve the minimum-cost perfect matching problem required by the structural diagonalizability test. |
 
 ## Random Graph Models
 
-### The model \(\mathcal{G}(n,p)\)
+### The model \mathcal{G}(n,p)
 
-For a directed graph with \(n\) vertices, every possible directed edge, including every self-loop, is independently present with probability
+For a directed graph with n vertices, every possible directed edge, including every self-loop, is independently present with probability
 
 p=\frac{\log n+c}{n},
 
 
-where \(c\) controls the location within the transition region.
+where c controls the location within the transition region.
 
 The theoretical lower and upper bounds used in the codes are
 
-
-L(c)
-=
 \exp\!\left(-2e^{-c}\right)
 \left(1+2e^{-c}+e^{-2c}\right),
 
-
 and
 
-
-U(c)
-=
 1-e^{-2c}\exp\!\left(-2e^{-c}\right).
 
 
 ### The model \(\mathcal{G}(n,p,q)\)
 
-For \(\mathcal{G}(n,p,q)\), every non-self-loop directed edge is independently present with probability
+For \mathcal{G}(n,p,q), every non-self-loop directed edge is independently present with probability
 
 
 p=\frac{\log n+c}{n},
 
 
-whereas every self-loop is independently present with probability \(q\).
+whereas every self-loop is independently present with probability q.
 
 The theoretical lower and upper bounds used in the codes are
 
 
-L(c,q)
-=
 \exp\!\left[-2(1-q)e^{-c}\right]
 \left[
 1+2(1-q)e^{-c}+(1-q)^2e^{-2c}
 \right],
 
-
 and
 
-
-U(c,q)
-=
 1-(1-q)^2e^{-2c}
 \exp\!\left[-2(1-q)e^{-c}\right].
 
