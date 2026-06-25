@@ -42,12 +42,11 @@ where c controls the location within the transition region.
 
 The theoretical lower and upper bounds used in the codes are
 
-\exp\!\left(-2e^{-c}\right)
-\left(1+2e^{-c}+e^{-2c}\right),
+exp(-2.*exp(-c_values)).*(1+2.*exp(-c_values)+exp(-2.*c_values)),
 
 and
 
-1-e^{-2c}\exp\!\left(-2e^{-c}\right).
+1-exp(-2*exp(-c_values)).*exp(-2*c_values).
 
 
 ### The model \(\mathcal{G}(n,p,q)\)
@@ -62,16 +61,11 @@ whereas every self-loop is independently present with probability q.
 
 The theoretical lower and upper bounds used in the codes are
 
-
-\exp\!\left[-2(1-q)e^{-c}\right]
-\left[
-1+2(1-q)e^{-c}+(1-q)^2e^{-2c}
-\right],
+ exp(-2 .* (1 - q) .* exp(-c)) .* (1 + 2 .* (1 - q) .* exp(-c) + (1 - q).^2 .* exp(-2 * c)),
 
 and
 
-1-(1-q)^2e^{-2c}
-\exp\!\left[-2(1-q)e^{-c}\right].
+1 - (1 - q).^2 .* exp(-2 * c) .* exp(-2 .* (1 - q) .* exp(-c)).
 
 
 ## Structural Diagonalizability Test
