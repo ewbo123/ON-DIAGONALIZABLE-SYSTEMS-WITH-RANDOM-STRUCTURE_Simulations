@@ -49,7 +49,7 @@ and
 1-exp(-2*exp(-c_values)).*exp(-2*c_values).
 
 
-### The model \(\mathcal{G}(n,p,q)\)
+### The model \mathcal{G}(n,p,q)
 
 For \mathcal{G}(n,p,q), every non-self-loop directed edge is independently present with probability
 
