@@ -17,7 +17,7 @@ num_selected_c = length(selected_c);
 %
 % These values do not need to be equally spaced.
 % Their positions in the figure are determined by the logarithmic axis.
-n_values = [100, 500, 1000, 3000, 6000, 10000];
+n_values = 500:500:4000;
 num_n = length(n_values);
 
 % Number of Monte Carlo samples for each pair (c,n)
@@ -132,7 +132,7 @@ theoretical_up = ...
     - exp(-2 .* exp(-selected_c)) .* ...
       exp(-2 .* selected_c);
 
-%% Colors and markers
+%% Colors, markers, and logarithmic tick settings
 
 colors = [
     0.0000, 0.4470, 0.7410;
@@ -145,13 +145,24 @@ colors = [
 
 markers = {'o', 's', '^', 'd', 'v', '*'};
 
-%% Create the six-panel figure
+% Representative ticks on the logarithmic horizontal axis
+tick_values = [500, 1000, 2000, 4000];
+
+tick_labels = arrayfun( ...
+    @(x) sprintf('%d', x), ...
+    tick_values, ...
+    'UniformOutput', false);
+
+%% ========================================================================
+%  Six-panel subplot figure only
+%  ========================================================================
 
 h_subplot = figure( ...
     'Position', [100, 100, 1800, 1120], ...
     'Color', 'w');
 
 t = tiledlayout(h_subplot, 2, 3);
+
 t.TileSpacing = 'compact';
 t.Padding = 'loose';
 
@@ -164,10 +175,7 @@ for c_idx = 1:num_selected_c
     c = selected_c(c_idx);
     current_color = colors(c_idx, :);
 
-    % Use a true logarithmic horizontal axis
-    ax.XScale = 'log';
-
-    %% Theoretical shaded range
+    %% Theoretical shaded region
 
     x_fill = [
         min(n_values), ...
@@ -194,7 +202,7 @@ for c_idx = 1:num_selected_c
         'LineWidth', 1.2, ...
         'DisplayName', 'Theoretical Range');
 
-    %% Simulation curve
+    %% Monte Carlo simulation curve
 
     plot( ...
         ax, ...
@@ -207,12 +215,16 @@ for c_idx = 1:num_selected_c
         'MarkerFaceColor', current_color, ...
         'DisplayName', 'Simulation Results');
 
+    %% True logarithmic horizontal axis
+
+    set(ax, 'XScale', 'log');
+
     %% Panel title
 
     title( ...
         ax, ...
         sprintf( ...
-            'c = %.1f (Theory: %.3f - %.3f)', ...
+            'c = %.1f (Theory: %.3f--%.3f)', ...
             c, ...
             theoretical_low(c_idx), ...
             theoretical_up(c_idx)), ...
@@ -235,20 +247,16 @@ for c_idx = 1:num_selected_c
     xlim(ax, [min(n_values), max(n_values)]);
     ylim(ax, [0, 1.05]);
 
-    % Display the actual simulated graph sizes as tick labels.
-    % Their positions are still determined by the logarithmic scale.
-    xticks(ax, n_values);
-    xticklabels(ax, string(n_values));
-    xtickangle(ax, 0);
+    xticks(ax, tick_values);
+    xticklabels(ax, tick_labels);
 
-    % Remove repeated labels from individual panels
     xlabel(ax, '');
     ylabel(ax, '');
 
     legend( ...
         ax, ...
         'Location', 'southeast', ...
-        'FontSize', 12, ...
+        'FontSize', 14, ...
         'FontName', 'Times New Roman', ...
         'FontWeight', 'bold');
 
@@ -267,7 +275,7 @@ xlabel( ...
 
 ylabel( ...
     t, ...
-    'Probability of Structural Diagonalizability', ...
+    'Structural Diagonalizability Probability', ...
     'FontSize', 18, ...
     'FontWeight', 'bold', ...
     'FontName', 'Times New Roman');
@@ -276,6 +284,7 @@ ylabel( ...
 
 fprintf('\nSimulation summary for G(n,p):\n');
 fprintf('Number of Monte Carlo samples: %d\n', num_samples);
+
 fprintf('Graph sizes: ');
 fprintf('%d ', n_values);
 fprintf('\n\n');
@@ -312,7 +321,7 @@ for c_idx = 1:num_selected_c
         theoretical_up(c_idx));
 end
 
-%% Save the six-panel figure
+%% Save the six-panel figure only
 
 desktop_path = fullfile(getenv('USERPROFILE'), 'Desktop');
 
@@ -320,13 +329,14 @@ if ~exist(desktop_path, 'dir')
     desktop_path = pwd;
 end
 
-output_file = fullfile( ...
+subplot_file = fullfile( ...
     desktop_path, ...
     'subplot_gnp_true_logscale.png');
 
 exportgraphics( ...
     h_subplot, ...
-    output_file, ...
+    subplot_file, ...
     'Resolution', 600);
 
-fprintf('\nThe six-panel figure has been saved to:\n%s\n', output_file);
+fprintf('\nThe six-panel figure has been saved to:\n%s\n', ...
+    subplot_file);

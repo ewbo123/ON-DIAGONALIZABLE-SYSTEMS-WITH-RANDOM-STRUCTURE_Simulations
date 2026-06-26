@@ -1,6 +1,7 @@
 clear; clc; close all;
 
 %% Global font settings
+
 set(groot, 'defaultAxesFontName', 'Times New Roman');
 set(groot, 'defaultTextFontName', 'Times New Roman');
 set(groot, 'defaultLegendFontName', 'Times New Roman');
@@ -16,11 +17,8 @@ c_fixed = 0;
 selected_q = [0, 0.2, 0.4, 0.6, 0.8, 1.0];
 num_selected_q = length(selected_q);
 
-% Actual graph sizes used in the simulations
-%
-% Their positions in the figure will be determined by the
-% logarithmic horizontal axis.
-n_values = [100, 500, 1000, 3000, 6000, 10000];
+% Graph sizes used in the simulations
+n_values = 500:500:4000;
 num_n = length(n_values);
 
 % Number of Monte Carlo samples for each pair (q,n)
@@ -35,12 +33,13 @@ if exist('munkres', 'file') ~= 2
            'Please add munkres.m to the current folder or MATLAB path.']);
 end
 
-% Preallocate memory for the simulation results
+% Preallocate memory for simulation results
 sim_probabilities = zeros(num_selected_q, num_n);
 
 %% Main simulation loop
 
 for q_idx = 1:num_selected_q
+
     q = selected_q(q_idx);
 
     fprintf('\n====================================================\n');
@@ -48,9 +47,11 @@ for q_idx = 1:num_selected_q
     fprintf('====================================================\n');
 
     for n_idx = 1:num_n
+
         n = n_values(n_idx);
 
         % Probability of each non-self-loop directed edge
+        %
         % In MATLAB, log(n) denotes the natural logarithm.
         p = (log(n) + c_fixed) / n;
 
@@ -64,18 +65,20 @@ for q_idx = 1:num_selected_q
         count = 0;
 
         %% Monte Carlo simulation
+
         for sample = 1:num_samples
 
-            % Generate the non-self-loop entries initially with
-            % probability p.
+            % Generate all entries initially with probability p.
+            % The diagonal entries are subsequently replaced using
+            % the prescribed self-loop probability q.
             A = rand(n) < p;
 
-            % Replace the diagonal entries independently according
-            % to the prescribed self-loop probability q.
+            % Generate the diagonal entries independently with
+            % self-loop probability q.
             diagonal_support = rand(n, 1) < q;
             A(1:n+1:end) = diagonal_support;
 
-            % Convert the adjacency matrix to the system matrix convention
+            % Convert the adjacency matrix to the system-matrix convention
             A_sys = A.';
             clear A;
 
@@ -95,7 +98,8 @@ for q_idx = 1:num_selected_q
 
             % Missing diagonal entries have unit cost
             diagonal_indices = logical(eye(n));
-            A_cost(diagonal_indices) = 1 - double(diag(A_sys));
+            A_cost(diagonal_indices) = ...
+                1 - double(diag(A_sys));
 
             % Compute a minimum-cost perfect matching
             [~, min_totalcost] = munkres(A_cost);
@@ -109,16 +113,21 @@ for q_idx = 1:num_selected_q
             if mod(sample, 50) == 0 || sample == num_samples
                 fprintf(['  Completed sample %d/%d, ', ...
                          'current probability = %.4f\n'], ...
-                         sample, num_samples, count / sample);
+                         sample, ...
+                         num_samples, ...
+                         count / sample);
             end
         end
 
         % Empirical probability of structural diagonalizability
-        sim_probabilities(q_idx, n_idx) = count / num_samples;
+        sim_probabilities(q_idx, n_idx) = ...
+            count / num_samples;
 
         fprintf(['Completed q = %.1f, n = %d: ', ...
                  'simulation probability = %.4f\n'], ...
-                 q, n, sim_probabilities(q_idx, n_idx));
+                 q, ...
+                 n, ...
+                 sim_probabilities(q_idx, n_idx));
 
         % Save a checkpoint after each completed (q,n) pair
         save( ...
@@ -133,20 +142,20 @@ end
 
 %% Theoretical upper and lower bounds for G(n,p,q)
 
-% Theoretical lower bound:
+% Theoretical lower bound
 theoretical_low = ...
     exp(-2 .* (1 - selected_q) .* exp(-c_fixed)) .* ...
     (1 ...
     + 2 .* (1 - selected_q) .* exp(-c_fixed) ...
     + (1 - selected_q).^2 .* exp(-2 * c_fixed));
 
-% Theoretical upper bound:
+% Theoretical upper bound
 theoretical_up = ...
     1 ...
     - (1 - selected_q).^2 .* exp(-2 * c_fixed) .* ...
       exp(-2 .* (1 - selected_q) .* exp(-c_fixed));
 
-%% Colors and markers
+%% Colors, markers, and logarithmic tick settings
 
 % Blue, red, yellow, green, purple, and orange
 colors = [
@@ -158,7 +167,18 @@ colors = [
     1.0000, 0.5000, 0.0000
 ];
 
-markers = {'o', 's', '^', 'd', 'v', 'o'};
+markers = {'o', 's', '^', 'd', 'v', '*'};
+
+% Representative ticks for the logarithmic horizontal axis.
+%
+% The ratio between adjacent displayed values is 2, so these
+% tick positions are equally spaced on a logarithmic axis.
+tick_values = [500, 1000, 2000, 4000];
+
+tick_labels = arrayfun( ...
+    @(x) sprintf('%d', x), ...
+    tick_values, ...
+    'UniformOutput', false);
 
 %% Create the six-panel figure
 
@@ -167,10 +187,12 @@ h_subplot = figure( ...
     'Color', 'w');
 
 t = tiledlayout(h_subplot, 2, 3);
+
 t.TileSpacing = 'compact';
 t.Padding = 'loose';
 
 for q_idx = 1:num_selected_q
+
     ax = nexttile(t);
 
     hold(ax, 'on');
@@ -178,9 +200,6 @@ for q_idx = 1:num_selected_q
 
     q = selected_q(q_idx);
     current_color = colors(q_idx, :);
-
-    % Use a true logarithmic horizontal axis
-    ax.XScale = 'log';
 
     %% Theoretical shaded range
 
@@ -209,7 +228,7 @@ for q_idx = 1:num_selected_q
         'LineWidth', 1.2, ...
         'DisplayName', 'Theoretical Range');
 
-    %% Simulation curve
+    %% Monte Carlo simulation curve
 
     plot( ...
         ax, ...
@@ -222,12 +241,16 @@ for q_idx = 1:num_selected_q
         'MarkerFaceColor', current_color, ...
         'DisplayName', 'Simulation Results');
 
+    %% Use a true logarithmic horizontal axis
+
+    set(ax, 'XScale', 'log');
+
     %% Panel title
 
     title( ...
         ax, ...
         sprintf( ...
-            'q = %.1f (Theory: %.3f - %.3f)', ...
+            'q = %.1f (Theory: %.3f--%.3f)', ...
             q, ...
             theoretical_low(q_idx), ...
             theoretical_up(q_idx)), ...
@@ -250,10 +273,10 @@ for q_idx = 1:num_selected_q
     xlim(ax, [min(n_values), max(n_values)]);
     ylim(ax, [0, 1.05]);
 
-    % Display the actual simulated graph sizes as tick labels.
-    % Their horizontal positions are determined by the log scale.
-    xticks(ax, n_values);
-    xticklabels(ax, string(n_values));
+    % All eight data points remain in the figure.
+    % Only four representative logarithmic tick labels are shown.
+    xticks(ax, tick_values);
+    xticklabels(ax, tick_labels);
     xtickangle(ax, 0);
 
     % Remove repeated axis labels from individual panels
@@ -263,7 +286,7 @@ for q_idx = 1:num_selected_q
     legend( ...
         ax, ...
         'Location', 'southeast', ...
-        'FontSize', 12, ...
+        'FontSize', 14, ...
         'FontName', 'Times New Roman', ...
         'FontWeight', 'bold');
 
@@ -282,7 +305,7 @@ xlabel( ...
 
 ylabel( ...
     t, ...
-    'Probability of Structural Diagonalizability', ...
+    'Structural Diagonalizability Probability', ...
     'FontSize', 18, ...
     'FontWeight', 'bold', ...
     'FontName', 'Times New Roman');
@@ -310,10 +333,12 @@ end
 fprintf('\n');
 
 for q_idx = 1:num_selected_q
+
     fprintf('%.1f', selected_q(q_idx));
 
     for n_idx = 1:num_n
-        fprintf('\t%.4f', sim_probabilities(q_idx, n_idx));
+        fprintf('\t%.4f', ...
+            sim_probabilities(q_idx, n_idx));
     end
 
     fprintf('\n');
@@ -334,7 +359,7 @@ for q_idx = 1:num_selected_q
         theoretical_up(q_idx));
 end
 
-%% Save the six-panel figure
+%% Save the six-panel figure only
 
 desktop_path = fullfile(getenv('USERPROFILE'), 'Desktop');
 
@@ -352,4 +377,5 @@ exportgraphics( ...
     output_file, ...
     'Resolution', 600);
 
-fprintf('\nThe six-panel figure has been saved to:\n%s\n', output_file);
+fprintf('\nThe six-panel figure has been saved to:\n%s\n', ...
+    output_file);
