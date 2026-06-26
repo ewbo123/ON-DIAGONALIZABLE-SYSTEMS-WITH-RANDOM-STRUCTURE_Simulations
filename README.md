@@ -143,7 +143,7 @@ selected_c = [-0.5, 0, 0.5, 1.0, 1.5, 2.0];
 and graph sizes
 
 ```matlab
-n_values = [100, 500, 1000, 3000, 6000, 10000];
+n_values = 500:500:4000;
 ```
 
 A six-panel figure is generated. Each panel contains the empirical probability curve and the theoretical interval associated with one value of \(c\). The graph sizes are displayed at their actual positions on a logarithmic horizontal axis.
@@ -248,22 +248,22 @@ which munkres
 The default settings are intended for the numerical experiments reported in the paper and can be computationally demanding. For a quick test, reduce the graph sizes and the number of Monte Carlo samples, for example:
 
 ```matlab
-n = 200;
-num_samples = 20;
+n = 4000;
+num_samples = 800;
 ```
 
 or, for the finite-size scripts,
 
 ```matlab
-n_values = [100, 200, 500];
-num_samples = 20;
+n_values = 500:500:4000;
+num_samples = 800;
 ```
 
 After confirming that the scripts run correctly, restore the original parameters to reproduce the reported experiments.
 
 ## Computational Notes
 
-The assignment problem is solved on an \(n\times n\) cost matrix. The classical Munkres algorithm has cubic worst-case time complexity and the current implementation stores dense matrices. Consequently, experiments with large \(n\), especially \(n=6000\) or \(n=10000\), require substantial memory and computation time.
+The assignment problem is solved on an \(n\times n\) cost matrix. The classical Munkres algorithm has cubic worst-case time complexity and the current implementation stores dense matrices. Consequently, experiments with large \(n\), especially \(n=3000\) or \(n==4000\), require substantial memory and computation time.
 
 For the full experiments, a high-memory workstation or computing server is recommended. The checkpoint files produced by the finite-size scripts preserve completed numerical results after each parameter pair.
 
